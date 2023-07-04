@@ -1,0 +1,24 @@
+NODE_MODULES_MODIFIED := `stat -c %Y node_modules 2>/dev/null || echo 0`
+PACKAGE_JSON_MODIFIED := `stat -c %Y package.json`
+PACKAGE_LOCK_MODIFIED := `stat -c %Y package-lock.json`
+
+_:
+    @just --list
+
+build: _node_modules spec
+    npm run build
+
+serve: build
+    npm run preview
+
+spec:
+    cd ../spec && just build
+    rm -rf public/spec
+    cp -ar ../spec/book public/spec
+
+_node_modules:
+	@\
+	(( {{PACKAGE_JSON_MODIFIED}} <= {{NODE_MODULES_MODIFIED}} \
+	&& {{PACKAGE_LOCK_MODIFIED}} <= {{NODE_MODULES_MODIFIED}} \
+	)) \
+	|| echo 'npm install'; npm install && touch node_modules

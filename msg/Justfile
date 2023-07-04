@@ -1,0 +1,16 @@
+PROTO := 'proto/opendrip-msg.proto'
+
+_:
+    @just --list
+
+cpp:
+    protoc --cpp_out=cpp {{PROTO}}
+
+rust:
+    protoc --rust_out=rust {{PROTO}}
+
+js:
+    npx pbjs {{PROTO}} -t static-module -o js/opendrip-msg.js
+    npx pbts js/opendrip-msg.js -o js/opendrip-msg.d.ts
+
+all: cpp rust js

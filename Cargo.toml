@@ -1,0 +1,12 @@
+[workspace]
+members = [
+    "mock/opendrip-uno",
+    "services/logger"
+]
+
+[workspace.dependencies]
+anyhow = "1"
+protobuf = "3.2"
+rumqttc = "0.22"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

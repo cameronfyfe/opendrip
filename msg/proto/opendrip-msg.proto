@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+//
+// DEVICE
+//
+
+enum DeviceType {
+    VALVE = 0;
+    FLOW_METER = 1;
+}
+
+enum DeviceUnits {
+    OPEN_CLOSE = 0;
+    GALLONS_PER_MINUTE = 1;
+}
+
+enum DeviceMode {
+    AUTO = 0;   // AUTO   - Device operates per controller logic
+    MANUAL = 1; // MANUAL - Device operates per a local override (buttons on controller, etc)
+    REMOTE = 2; // REMOTE - Device operates per commands from agent (mqtt message from a client, etc)
+}
+
+message DeviceInfo {
+    // Device name
+    string name = 1;
+    // Device properties
+    map<string, string> properties = 2;
+    // Device type
+    oneof device_type {
+        DeviceType standard_type = 3;
+        string custom_type = 4;
+    }
+    // Device units
+    oneof device_units {
+        DeviceUnits standard_unit = 5;
+        string custom_unit = 6;
+    }
+    // Minimum message interval in milliseconds for device state
+    uint32 min_msg_interval_ms = 7;
+}
+
+message DeviceConfig {
+    // Device mode
+    DeviceMode device_mode = 1;
+    // Message interval in milliseconds for device state
+    uint32 msg_interval_ms = 2;
+}
+
+message DeviceState {
+    // Value (interpretation of string values depends on DeviceInfo.device_type)
+    //   VALVE => "open" or "closed"
+    //   FLOW_METER => float
+    string value = 1;
+}
+
+//
+// CONTROLLER
+//
+
+message ControllerInfo {
+    // Controller name
+    string name = 1;
+    // Controller properties
+    map<string, string> properties = 2;
+    // List of device IDs for controller
+    repeated string devices = 3;
+}
+
+message ControllerConfig { }
+
+message ControllerState {
+    // Controller uptime in seconds
+    uint32 uptime_s = 1;
+}
+
+//
+// AGENT
+//
+
+message AgentInfo {
+    // Controller name
+    string name = 1;
+    // Controller properties
+    map<string, string> properties = 2;
+    // List of controller IDs for agent
+    repeated string controllers = 3;
+}
+
+message AgentConfig { }
+
+message AgentState {
+    // Agent uptime in seconds
+    uint32 uptime_s = 1;
+}
+
+//
